@@ -17,6 +17,7 @@ namespace Learning
             while ((line = file.ReadLine()) != null)
             {
                 string[] a = line.Split(' ');
+
                 double[,] b = new double[a.Length,1];
 
                 for (int i = 0; i < a.Length; i++)
@@ -40,33 +41,40 @@ namespace Learning
             List<int> layers = new List<int>();
 
 
-            layers.Add(2);
-            layers.Add(10);
-            layers.Add(4);
-            layers.Add(9);
-            layers.Add(7);
+            layers.Add(1);
+            layers.Add(3);
             layers.Add(1);
 
-            NeuralNetwork N = new NeuralNetwork(layers,0.00005);
-         
-
-            N.ForwardPropagate(X[1]);
-
-            Console.WriteLine(N.ComputeCostFunction(X, Y));
-
+            NeuralNetwork N = new NeuralNetwork(layers,0.0005);
           
             int tt = 20000;
 
+            double last;
 
-            for (int i = 0; i < tt; i++)
+            foreach (Matrix x in N.O)
             {
+                x.Print();
+                Console.WriteLine();
+            }
+
+            do
+            {
+                last = N.ComputeCostFunction(X, Y);
                 N.ComputeDerivatives(X, Y);
                 N.Descend();
-                
-            }
+                Console.WriteLine("Const : " + N.ComputeCostFunction(X, Y));
+                tt--;
+            } while (last > N.ComputeCostFunction(X, Y));
 
             Console.WriteLine("Const : " + N.ComputeCostFunction(X, Y));
 
+            foreach (Matrix x in N.O)
+            {
+                x.Print();
+                Console.WriteLine();
+            }
+
+            // N.ForwardPropagate(new Matrix(1, 1, -100)).Print();
             
 
 

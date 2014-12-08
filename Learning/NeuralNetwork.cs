@@ -39,11 +39,8 @@ namespace Learning
             for (int i = 0; i < layers.Count - 1; i++)
             {
                 Random a = new Random();
-
-                O.Add(new Matrix(layers[i + 1], layers[i], 1));
-
-                O.LastOrDefault().Apply(delegate(double x) { return a.Next(0, 4); });
                 
+                O.Add((new Matrix(layers[i + 1], layers[i], 1)).Apply(delegate(double x) { return a.NextDouble() * 10; }));                
                 D.Add(new Matrix(layers[i + 1], layers[i], 1));
             }
         }
@@ -180,7 +177,14 @@ namespace Learning
 
         private Matrix g(Matrix A)
         {
-            return A.Apply(delegate(double x) { return 1 / (1 + Math.Pow(Math.E, -x)); });
+            return A.Apply(delegate(double x) {
+                
+                if (x < -45.0) return 0.0;
+                
+                else if (x > 45.0) return 1.0;
+
+                return 1.0 / (1.0 + Math.Exp(-x)); 
+            });
         }
     }
 }
