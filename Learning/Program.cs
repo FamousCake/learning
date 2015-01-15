@@ -8,6 +8,7 @@ namespace Learning
 {
     class Program
     {
+        // This function reads input from text files
         static List<Matrix> ReadData (string filename)
         {
             List<Matrix> L = new List<Matrix>();
@@ -35,47 +36,70 @@ namespace Learning
 
         static void Main(string[] args)
         {
+            // Read training data
             List<Matrix> X = ReadData("input.txt");
             List<Matrix> Y = ReadData("output.txt");
 
-            List<int> layers = new List<int>();
+            // Determinte the number ot nodes in the input and output layer
+            int inputLayersCount = X[0].N;
+            int outputLayersCount = Y[0].N;
 
-
-            layers.Add(1);
-            layers.Add(3);
-            layers.Add(1);
-
-            NeuralNetwork N = new NeuralNetwork(layers,0.0005);
-          
-            int tt = 20000;
-
-            double last;
-
-            foreach (Matrix x in N.O)
+            // Expect input from the user
+            Console.WriteLine("Input how many hidden layers the network will have : ");
+            int hiddenLayersCount = Convert.ToInt32(Console.ReadLine());
+            
+            // Input the number of nodes for each hidden layer
+            List<int> hiddenLayers = new List<int>();
+            for (int i = 0; i < hiddenLayersCount; i++)
             {
-                x.Print();
-                Console.WriteLine();
+                Console.Write("Input node count in hidden layer " + (i + 1) + " : ");
+                hiddenLayers.Add(Convert.ToInt32(Console.ReadLine()));
             }
 
+            
+            // Holds the number of nodes for each of the hidden layers
+            List<int> layers = new List<int>();
+            
+            layers.Add(X[0].N);
+                        
+            foreach( int x in hiddenLayers) {
+                layers.Add(x);
+            }
+            
+            layers.Add(Y[0].N);
+
+            // Create a new Neural Network            
+            NeuralNetwork N = new NeuralNetwork(layers, 0.0005);
+          
+            // The loop goes on untill the new cost function is an improvement to the old one
+            double lastCostFunctionValue;
             do
             {
-                last = N.ComputeCostFunction(X, Y);
+                lastCostFunctionValue = N.ComputeCostFunction(X, Y);
                 N.ComputeDerivatives(X, Y);
                 N.Descend();
-                Console.WriteLine("Const : " + N.ComputeCostFunction(X, Y));
-                tt--;
-            } while (last > N.ComputeCostFunction(X, Y));
+            } while (lastCostFunctionValue > N.ComputeCostFunction(X, Y));
 
-            Console.WriteLine("Const : " + N.ComputeCostFunction(X, Y));
+            int z = 0;
 
-            foreach (Matrix x in N.O)
+            Console.WriteLine("Cost function value after training is : " + N.ComputeCostFunction(X, Y));
+
+            while ( z != -1)
             {
-                x.Print();
-                Console.WriteLine();
-            }
+                Console.WriteLine("Enter new test input vector : ");
+                double [,] l = new double[inputLayersCount, 1];
 
-            // N.ForwardPropagate(new Matrix(1, 1, -100)).Print();
-            
+                for (int i = 0; i < inputLayersCount; i++)
+                {
+                    l[i, 0] = Convert.ToInt32(Console.ReadLine());
+                }
+
+                Console.WriteLine("Predicted output is : ");
+
+                N.ForwardPropagate(new Matrix(l, inputLayersCount, 1)).Print();
+
+
+            }
 
 
             Console.Write("\n\nPress any key to continue...");

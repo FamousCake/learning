@@ -8,18 +8,26 @@ namespace Learning
 {
     class NeuralNetwork
     {
+        // Holds the number of nodes for each layer
         public List<int> L;
         
+        // Holds activated values for each node in the network
         public List<Matrix> a;
+
+        // Hold non-activated values for each node in the network
         public List<Matrix> z;
 
+        // Hold the transition matrixes from one layer to the next
         public List<Matrix> O;
 
+        // Delta matrixes used to compute derivatives
         public List<Matrix> d;
         public List<Matrix> D;
 
+        // Learningn rate used by gradient descent
         public double LearningRate;
 
+        // Basic constructor
         public NeuralNetwork(List<int> layers, double learningRate)
         {
             this.L = layers;
@@ -40,21 +48,26 @@ namespace Learning
             {
                 Random a = new Random();
                 
-                O.Add((new Matrix(layers[i + 1], layers[i], 1)).Apply(delegate(double x) { return a.NextDouble() * 10; }));                
+                // Transition matrixes are always randomized
+                O.Add((new Matrix(layers[i + 1], layers[i], 1)).Apply(delegate(double x) { return a.NextDouble() * 10; }));
                 D.Add(new Matrix(layers[i + 1], layers[i], 1));
             }
         }
 
 
+        // Makes one "step" down during gradient descent
         public void Descend()
         {
+            // The new O matrix is first computed as OO
             List<Matrix> OO = new List<Matrix>();
 
+            // Initialization with all 0s
             for (int k = 0; k < O.Count; k++)
             {
                 OO.Add(new Matrix(O[k].N, O[k].M, 0));
             }
 
+            // Computed the new values for O
             for (int k = 0; k < O.Count; k++)
             {
                 for (int i = 0; i < O[k].N; i++)
@@ -71,6 +84,7 @@ namespace Learning
         }
 
         
+        // This here is back propagation where the derivatives are computed
         public void ComputeDerivatives(List<Matrix> X, List<Matrix> Y)
         {
             // Training examples
@@ -102,6 +116,7 @@ namespace Learning
 
         }
 
+        // Standard forward propadation to computed output values
         public Matrix ForwardPropagate(Matrix X)
         {
             this.a[0] = new Matrix(X);
